@@ -7,7 +7,6 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["pycalphad_xml"]
 package-data = { pycalphad_xml = ["*.rng"] }
 
 #[tool.setuptools.package-data]
