@@ -1,0 +1,61 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "setuptools_scm[toml]>=6.0",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["pycalphad_xml"]
+package-data = { pycalphad_xml = ["*.rng"] }
+
+#[tool.setuptools.package-data]
+#pycalphad_xml = ["*.rng"]
+
+[project]
+name = "pycalphad_xml"
+dynamic = ["version"]  # handled by setuptools_scm
+description = "XML database plugin for pycalphad"
+readme = "README.md"
+authors = [
+  { name = "Richard Otis", email = "richard.otis@outlook.com" },
+  { name = "Brandon Bocklund", email = "brandonbocklund@gmail.com" },
+]
+license = { file = "LICENSE" }
+dependencies = [
+    # NOTE: please try to keep any depedencies in alphabetic order so they
+    # may be easily compared with other dependency lists
+    "importlib_resources",
+    "lxml",
+    "pycalphad>=0.10.0",
+]
+classifiers = [
+    # How mature is this project? Common values are
+    #   3 - Alpha
+    #   4 - Beta
+    #   5 - Production/Stable
+    "Development Status :: 4 - Beta",
+
+    # Indicate who your project is intended for
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+
+    # Pick your license as you wish (should match "license" above)
+    "License :: OSI Approved :: MIT License",
+
+    # Supported Python versions
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/pycalphad/pycalphad_xml"
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+testpaths = [
+    "tests",
+]
+
+[tool.setuptools_scm]
