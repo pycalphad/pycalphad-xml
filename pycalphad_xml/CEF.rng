@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0" 
+    xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <include href="core.rng"/>
+    <define name="CEFConstituentArray">
+        <element name="ConstituentArray">
+            <oneOrMore>
+                <element name="Site">
+                    <optional>
+                        <attribute name="id">
+                            <data type="integer"/>
+                        </attribute>
+                    </optional>
+                    <optional>
+                        <attribute name="ratio">
+                            <data type="double"/>
+                        </attribute>
+                    </optional>
+                    <optional>
+                        <attribute name="refid">
+                            <data type="integer"/>
+                        </attribute>
+                    </optional>
+                    <oneOrMore>
+                        <element name="Constituent">
+                            <attribute name="refid">
+                                <data type="string"/>
+                            </attribute>
+                        </element>
+                    </oneOrMore>
+                </element>
+            </oneOrMore>
+        </element>
+    </define>
+    <define name="CEF.model" combine="choice">
+        <element name="Model">
+            <attribute name="type">
+                <a:documentation>Compound Energy Formalism</a:documentation>
+                <value>CEF</value>
+            </attribute>
+            <interleave>
+                <ref name="CEFConstituentArray"/>
+                <optional>
+                    <choice>
+                        <element name="Liquid">
+                            <a:documentation>Designates this phase as a liquid phase. Not used by all implementations.</a:documentation>
+                            <empty/>
+                        </element>
+                        <element name="Gas">
+                            <a:documentation>Designates this phase as a gas phase. Not used by all implementations.</a:documentation>
+                            <empty/>
+                        </element>
+                        <element name="Aqueous">
+                            <a:documentation>Designates this phase as an aqueous phase. Not used by all implementations.</a:documentation>
+                            <empty/>
+                        </element>
+                        <element name="Charged">
+                            <a:documentation>Designates this phase as containing charged species requiring explicit charge balance. Not used by all implementations.</a:documentation>
+                            <empty/>
+                        </element>
+                        <element name="TwoSublatticeIonicLiquid">
+                            <a:documentation>Two-sublattice ionic liquid model of Sundman et al</a:documentation>
+                            <empty/>
+                        </element>
+                    </choice>
+                </optional>
+                <optional>
+                    <element name="MagneticOrdering">
+                        <attribute name="type">
+                            <a:documentation>Inden-Hillert-Jarl model for magnetic ordering</a:documentation>
+                            <value>IHJ</value>
+                        </attribute>
+                        <attribute name="afm_factor"><data type="double"/></attribute>
+                        <attribute name="structure_factor"><data type="double"/></attribute>
+                        <empty/>
+                    </element>
+                </optional>
+                <optional>
+                    <element name="AtomicOrdering">
+                        <a:documentation>Two-part atomic ordering model of Ansara et al</a:documentation>
+                        <attribute name="ordered_part">
+                            <a:documentation>Ordered phase name</a:documentation>
+                            <data type="string"/>
+                        </attribute>
+                        <attribute name="disordered_part">
+                            <a:documentation>Disordered phase name</a:documentation>
+                            <data type="string"/>
+                        </attribute>
+                        <empty/>
+                    </element>
+                </optional>
+                <optional>
+                    <element name="ChemicalGroups">
+                        <a:documentation>Mapping of species to integer chemical groups. Equal integers mean the species belong to the same group.</a:documentation>
+                        <oneOrMore>
+                            <element name="Constituent">
+                                <attribute name="groupid">
+                                    <data type="integer"/>
+                                </attribute>
+                                <attribute name="refid">
+                                    <data type="string"/>
+                                </attribute>
+                            </element>
+                        </oneOrMore>
+                    </element>
+                </optional>
+            </interleave>
+        </element>
+        <zeroOrMore>
+            <element name="Parameter">
+                <attribute name="type">
+                    <choice>
+                        <!-- Gibbs energy parameters -->
+                        <value>G</value><a:documentation>Gibbs parameters</a:documentation>
+                        <value>L</value><a:documentation>Excess Gibbs energy</a:documentation>
+                        <value>QKT</value><a:documentation>Generalized Kohler-Toop polynomial</a:documentation>
+                        <!-- Physical model parameters -->
+                        <value>TC</value><a:documentation>Curie temperature</a:documentation>
+                        <value>NT</value><a:documentation>Neel temperature</a:documentation>
+                        <value>BMAGN</value><a:documentation>Bohr magneton number</a:documentation>
+                        <value>GD</value><a:documentation>Gibbs energy difference between liquid and amorphous states</a:documentation>
+                        <value>THETA</value><a:documentation>Einstein temperature (log)</a:documentation>
+                        <!-- Molar volume parameters -->
+                        <value>V0</value><a:documentation>Molar volume at standard temperature and pressure (STP)</a:documentation>
+                        <value>VA</value><a:documentation>Integrated thermal expansivity</a:documentation>
+                        <value>VC</value><a:documentation>High-pressure fitting parameter</a:documentation>
+                        <value>VK</value><a:documentation>Isothermal compressibility</a:documentation>
+                        <!-- Property model parameters -->
+                        <value>VISC</value><a:documentation>Viscosity, RT*log(viscosity)</a:documentation>
+                        <value>ELRS</value><a:documentation>Electric resistivity</a:documentation>
+                        <value>THCD</value><a:documentation>Thermal Conductivity</a:documentation>
+                        <value>SIGM</value><a:documentation>Surface tension of a liquid endmember</a:documentation>
+                        <value>XI</value><a:documentation>Surface tension dampening factor for a constituent</a:documentation>
+                        <!-- Mobility parameters -->
+                        <value>MQ</value><a:documentation>Activation enthalpy for mobility</a:documentation>
+                        <value>MF</value><a:documentation>Pre-exponential factor for mobility</a:documentation>
+                        <value>DQ</value><a:documentation>Activation enthalpy for diffusivity</a:documentation>
+                        <value>DF</value><a:documentation>Pre-expontential factor for diffusivity</a:documentation>
+                        <value>VS</value><a:documentation>Volume per mole of volume-carrying species</a:documentation>
+                    </choice>
+                </attribute>
+                <interleave>
+                    <optional>
+                        <text/>
+                    </optional>
+                    <zeroOrMore>
+                        <ref name="Interval"/>
+                    </zeroOrMore>
+                    <ref name="CEFConstituentArray"/>
+                    <optional>
+                        <choice>
+                            <a:documentation>Choice between Redlich-Kister interaction order ("Order") and Generalized Kohler-Toop polynomials ("Exponents")</a:documentation>
+                            <element name="Order">
+                                <data type="integer"/>
+                            </element>
+                            <element name="Exponents">
+                                <list>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                    <optional><data type="float"/></optional>
+                                </list>
+                            </element>
+                        </choice>
+                    </optional>
+                    <optional>
+                        <element name="DiffusingSpecies">
+                            <attribute name="refid">
+                                <data type="string"/>
+                            </attribute>
+                        </element>
+                    </optional>
+                </interleave>
+            </element>
+        </zeroOrMore>
+    </define>
+</grammar>

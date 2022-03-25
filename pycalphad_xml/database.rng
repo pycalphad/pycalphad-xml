@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0"
+    xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <include href="core.rng"/>
+    <include href="CEF.rng"/>
+    <include href="MQMQA.rng"/>
+    <start>
+        <element name="Database">
+            <a:documentation>Self-consistent database of material properties</a:documentation>
+            <attribute name="version">
+                <value>0</value>
+            </attribute>
+            <interleave>
+                <optional>
+                    <element name="metadata">
+                        <optional>
+                            <element name="writer">
+                                <a:documentation>Software responsible for writing the database</a:documentation>
+                                <data type="string"/>
+                            </element>
+                        </optional>
+                    </element>
+                </optional>
+                <oneOrMore>
+                    <element name="ChemicalElement">
+                        <a:documentation>Pure chemical element</a:documentation>
+                        <attribute name="id">
+                            <a:documentation>Pure chemical element identifier</a:documentation>
+                            <data type="string"/>
+                        </attribute>
+                        <attribute name="mass">
+                            <a:documentation>Molar mass of element</a:documentation>
+                            <data type="double"/>
+                        </attribute>
+                        <attribute name="reference_phase">
+                            <a:documentation>Stable phase of element in standard state</a:documentation>
+                            <data type="string"/>
+                        </attribute>
+                        <attribute name="H298">
+                            <a:documentation>Reference value of enthalpy at 298 K</a:documentation>
+                            <data type="double"/>
+                        </attribute>
+                        <attribute name="S298">
+                            <a:documentation>Reference value of entropy at 298 K</a:documentation>
+                            <data type="double"/>
+                        </attribute>
+                        <empty/>
+                    </element>
+                </oneOrMore>
+                <zeroOrMore>
+                    <element name="Species">
+                        <a:documentation>Chemical Species</a:documentation>
+                        <attribute name="id">
+                            <a:documentation>Species identifier</a:documentation>
+                            <data type="string"/>
+                        </attribute>
+                        <optional>
+                            <a:documentation>Electric charge of species</a:documentation>
+                            <attribute name="charge"><data type="double"/></attribute>
+                        </optional>
+                        <oneOrMore>
+                            <element name="ChemicalElement">
+                                <attribute name="refid">
+                                    <data type="string"/>
+                                </attribute>
+                                <attribute name="ratio">
+                                    <a:documentation>Atomic ratio of this element in the species</a:documentation>
+                                    <data type="double"/>
+                                </attribute>
+                            </element>
+                        </oneOrMore>
+                    </element>
+                </zeroOrMore>
+                <zeroOrMore>
+                    <ref name="Expr"/>
+                </zeroOrMore>
+                <oneOrMore>
+                    <element name="Phase">
+                        <a:documentation>A material phase, such as a solid, liquid, or gas</a:documentation>
+                        <attribute name="id">
+                            <data type="string"/> <!-- TODO: used to be NCName, but parentheses are not allowed (and are common in DAT phases)-->
+                        </attribute>
+                        <choice>
+                            <ref name="CEF.model"/>
+                            <ref name="MQMQA.model"/>
+                        </choice>
+                    </element>
+                </oneOrMore>
+            </interleave>
+        </element>
+    </start>
+    <define name="Expr">
+        <element name="Expr">
+            <optional>
+                <attribute name="id">
+                    <data type="NCName"/>
+                </attribute>
+            </optional>
+            <mixed>
+                <zeroOrMore>
+                    <ref name="Interval"/>
+                </zeroOrMore>
+            </mixed>
+        </element>
+    </define>
+</grammar>

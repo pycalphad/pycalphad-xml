@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0"
+    xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <include href="core.rng"/>
+    <define name="MQMConstituentArray">
+        <!--Exactly two sites: cations and anions-->
+        <element name="ConstituentArray">
+            <element name="Site">
+                <optional>
+                    <attribute name="id">
+                        <data type="integer"/>
+                    </attribute>
+                </optional>
+                <optional>
+                    <attribute name="refid">
+                        <data type="integer"/>
+                    </attribute>
+                </optional>
+                <oneOrMore>
+                    <element name="Constituent">
+                        <attribute name="refid">
+                            <data type="string"/>
+                        </attribute>
+                    </element>
+                </oneOrMore>
+            </element>
+            <element name="Site">
+                <optional>
+                    <attribute name="id">
+                        <data type="integer"/>
+                    </attribute>
+                </optional>
+                <optional>
+                    <attribute name="refid">
+                        <data type="integer"/>
+                    </attribute>
+                </optional>
+                <oneOrMore>
+                    <element name="Constituent">
+                        <attribute name="refid">
+                            <data type="string"/>
+                        </attribute>
+                    </element>
+                </oneOrMore>
+            </element>
+        </element>
+    </define>
+    <define name="MQMQA.model" combine="choice">
+        <element name="Model">
+            <attribute name="type">
+                <a:documentation>Modified Quasichemical Model in the Quadruplet Approximation</a:documentation>
+                <value>MQMQA</value>
+            </attribute>
+            <attribute name="version">
+                <choice>
+                    <value>SUBG</value><a:documentation>Original form of the MQMQA from Pelton, Chartrand, and Eriksson (2001)</a:documentation>
+                    <value>SUBQ</value><a:documentation>Revised form of the MQMQA by Lambotte and Chartrand (2011)</a:documentation>
+                </choice>
+            </attribute>
+            <interleave>
+                <ref name="MQMConstituentArray"/>
+                <element name="ChemicalGroups">
+                    <a:documentation>Mapping of cation/anion species to a integer chemical groups. Equal integers mean the species belong to the same group.</a:documentation>
+                    <interleave>
+                        <element name="Cations">
+                            <oneOrMore>
+                                <element name="Constituent">
+                                    <attribute name="groupid">
+                                        <data type="integer"/>
+                                    </attribute>
+                                    <attribute name="refid">
+                                        <data type="string"/>
+                                    </attribute>
+                                </element>
+                            </oneOrMore>
+                        </element>
+                        <element name="Anions">
+                            <oneOrMore>
+                                <element name="Constituent">
+                                    <attribute name="groupid">
+                                        <data type="integer"/>
+                                    </attribute>
+                                    <attribute name="refid">
+                                        <data type="string"/>
+                                    </attribute>
+                                </element>
+                            </oneOrMore>
+                        </element>
+                    </interleave>
+                </element>
+            </interleave>
+        </element>
+        <zeroOrMore>
+            <element name="Parameter">
+                <attribute name="type">
+                    <choice>
+                        <value>MQMG</value><a:documentation>Gibbs energy of a pair</a:documentation>
+                        <value>MQMZ</value><a:documentation>Coordination number of a quadruplet. Coordination numbers for pairs must be given, default coordination numbers for other quadruplets can be generated automatically. Coordination numbers must result in a charge neutral quadruplet.</a:documentation>
+                        <value>MQMX</value><a:documentation>Excess Gibbs energy for a quadruplet</a:documentation>
+                    </choice>
+                </attribute>
+                <interleave>
+                    <optional>
+                        <text/>
+                    </optional>
+                    <zeroOrMore>
+                        <ref name="Interval"/>
+                    </zeroOrMore>
+                    <ref name="MQMConstituentArray"/>
+                    <choice> <!-- TODO: can these choices be enforced to be linked to the Parameter.type attribute? -->
+                        <!-- MQMG: Pair zetas and stoichiometry -->
+                        <interleave>
+                            <element name="Zeta">
+                                <data type="float"/>
+                            </element>
+                            <element name="StoichiometricFactors">
+                            <!-- In the implementation, only the first one matters. -->
+                                <list>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                </list>
+                            </element>
+                        </interleave>
+                        <!-- MQMZ: Quadruplet coordination numbers, exactly four -->
+                        <interleave>
+                            <element name="Coordinations">
+                                <list>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                </list>
+                            </element>
+                        </interleave>
+                        <!-- MQMX: Excess exponents, exactly two are relevant but four are stored (the first two are for cations, the second two for anions) -->
+                        <interleave>
+                            <element name="MixingCode">
+                                <attribute name="type">
+                                    <choice>
+                                        <value>G</value>
+                                        <value>Q</value>
+                                        <value>B</value>
+                                        <value>R</value>
+                                    </choice>
+                                </attribute>
+                            </element>
+                            <element name="Exponents">
+                                <list>
+                                    <!-- Exponents should be integers by the ChemSage DAT spec, but our formulation is more flexible -->
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                    <data type="float"/>
+                                </list>
+                            </element>
+                            <optional>
+                                <interleave>
+                                    <element name="AdditionalMixingConstituent">
+                                        <attribute name="refid">
+                                            <data type="string"/>
+                                        </attribute>
+                                    </element>
+                                    <element name="AdditionalMixingExponent">
+                                        <!-- Exponents should be integers by the ChemSage DAT spec, but our formulation is more flexible -->
+                                        <data type="float"/>
+                                    </element>
+                                </interleave>
+                            </optional>
+                        </interleave>
+                    </choice>
+                </interleave>
+            </element>
+        </zeroOrMore>
+    </define>
+</grammar>

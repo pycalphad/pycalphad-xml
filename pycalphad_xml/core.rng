@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0" 
+    xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <define name="Interval" combine="choice">
+        <element name="Interval">
+            <attribute name="in">
+                <data type="NCName"/>
+            </attribute>
+            <attribute name="lower">
+                <data type="decimal"/>
+            </attribute>
+            <optional>
+                <attribute name="upper">
+                    <data type="decimal"/>
+                </attribute>
+            </optional>
+            <text/>
+        </element>
+    </define>
+</grammar>
