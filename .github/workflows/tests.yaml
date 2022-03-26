@@ -1,0 +1,28 @@
+name: pycalphad_xml tests
+
+on: [push, pull_request]
+
+jobs:
+# PyTest: Run automated tests with PyTest using both release and development versions of pycalphad
+  PyTest:
+    name: Test Python ${{ matrix.python-version }} (pycalphad development version = ${{ matrix.pycalphad_development_version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 100
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        pycalphad_development_version: [true, false]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # fetch the entire repo history, required to guarantee versioneer will pick up the tags
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install pycalphad development version
+      run: pip install git+https://github.com/pycalphad/pycalphad.git@develop
+      if: ${{ matrix.pycalphad_development_version }}
+    - run: pip install .
+    - run: pip list
+    - run: pytest -v
