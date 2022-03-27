@@ -93,8 +93,8 @@ inv_phase_options = dict([reversed(i) for i in phase_options.items()])
 
 def _get_single_node(nodes, allow_zero=False):
     """Helper function for when a particular set of nodes returned from `xpath` should have exactly one node.
-    
-    If null_case is False, 
+
+    If null_case is False,
     """
     if len(nodes) == 1:
         return nodes[0]
@@ -137,7 +137,7 @@ def parse_model(dbf, phase_name, model_node, parameters):
     # MQMQA hints
     if model_type == "MQMQA":
         model_hints["mqmqa"] = {}
-        model_hints["mqmqa"]["type"] = model_node.attrib["version"]    
+        model_hints["mqmqa"]["type"] = model_node.attrib["version"]
         chemical_groups_hint = {
             "cations": {},
             "anions": {},
@@ -175,11 +175,11 @@ def parse_model(dbf, phase_name, model_node, parameters):
             # Special MQMQA/QKTO handling, which do not have Redlich-Kister parameters.
             # Redlich-Kister "order" has no meaning
             int_order = None
-            # Parameters should not be sorted as the constituent order is related to particular exponents 
+            # Parameters should not be sorted as the constituent order is related to particular exponents
             constituent_array = [[str(c) for c in lx] for lx in constituent_array]
         else:
             constituent_array = [[str(c) for c in sorted(lx)] for lx in constituent_array]
-        
+
         # Parameter value
         param_nodes = param_node.xpath('./Interval') + [''.join(param_node.xpath('./text()')).strip()]
         function_obj = convert_math_to_symbolic(param_nodes)
@@ -275,7 +275,7 @@ def write_xml(dbf, fd, require_valid=True):
     phase_nodes = {}
     for element in sorted(dbf.elements):
         ref = dbf.refstates.get(element, {})
-        refphase = ref.get('phase', 'BLANK') 
+        refphase = ref.get('phase', 'BLANK')
         mass = ref.get('mass', 0.0)
         H298 = ref.get('H298', 0.0)
         S298 = ref.get('S298', 0.0)
@@ -316,7 +316,7 @@ def write_xml(dbf, fd, require_valid=True):
                 for constituent in sorted(constituents, key=str):
                     objectify.SubElement(site_node, "Constituent", refid=str(constituent))
                 subl_idx += 1
-            
+
             # ChemicalGroups
             chemical_groups_node = objectify.SubElement(model_node, "ChemicalGroups")
             cation_node = objectify.SubElement(chemical_groups_node, "Cations")
@@ -324,7 +324,7 @@ def write_xml(dbf, fd, require_valid=True):
                     objectify.SubElement(cation_node, "Constituent", refid=str(constituent), groupid=str(group_id))
             anion_node = objectify.SubElement(chemical_groups_node, "Anions")
             for constituent, group_id in hint["chemical_groups"]["anions"].items():
-                    objectify.SubElement(anion_node, "Constituent", refid=str(constituent), groupid=str(group_id))                
+                    objectify.SubElement(anion_node, "Constituent", refid=str(constituent), groupid=str(group_id))
             del model_hints["mqmqa"]
         else:
             model_node = objectify.SubElement(phase_nodes[name], "Model", type="CEF")
@@ -379,7 +379,7 @@ def write_xml(dbf, fd, require_valid=True):
             phase_nodes[phase_name] = objectify.SubElement(root, "Phase", id=str(phase_name))
         phase_node = phase_nodes[phase_name]
         param_node = objectify.SubElement(phase_node, "Parameter", type=str(param['parameter_type']))
-        if param.get("parameter_order") is not None:     
+        if param.get("parameter_order") is not None:
             order_node = objectify.SubElement(param_node, "Order")
             order_node._setText(str(param['parameter_order']))
         # Constituent array
@@ -408,7 +408,7 @@ def write_xml(dbf, fd, require_valid=True):
         elif param["parameter_type"] == "QKT":
             objectify.SubElement(param_node, "Exponents")._setText(" ".join(map(str, param["exponents"])))
 
-        if param.get("parameter") is not None:            
+        if param.get("parameter") is not None:
             nodes = convert_symbolic_to_nodes(param['parameter'])
             for node in nodes:
                 if isinstance(node, str):
@@ -431,4 +431,3 @@ def write_xml(dbf, fd, require_valid=True):
     # XXX: href needs to be changed
     fd.write('<?xml-model href="database.rng" schematypens="http://relaxng.org/ns/structure/1.0" type="application/xml"?>\n')
     fd.write(etree.tostring(root, pretty_print=True).decode("utf-8"))
-
