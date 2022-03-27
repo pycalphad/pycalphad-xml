@@ -9,11 +9,8 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 package-data = { pycalphad_xml = ["*.rng"] }
 
-#[tool.setuptools.package-data]
-#pycalphad_xml = ["*.rng"]
-
 [project]
-name = "pycalphad_xml"
+name = "pycalphad-xml"
 dynamic = ["version"]  # handled by setuptools_scm
 description = "XML database plugin for pycalphad"
 readme = "README.md"
@@ -49,7 +46,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pycalphad/pycalphad_xml"
+Homepage = "https://github.com/pycalphad/pycalphad-xml"
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"
