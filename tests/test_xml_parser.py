@@ -3,7 +3,6 @@ from pycalphad import Database, Model, calculate, variables as v
 from pycalphad.models.model_mqmqa import ModelMQMQA
 from pycalphad.tests.fixtures import select_database, load_database
 from pycalphad.tests.test_energy import check_energy
-import pycalphad_xml
 
 @pytest.mark.xfail(reason="SymEngine is incorrect in equality comparison for expressions")
 # e.g. these are not equal:
@@ -104,4 +103,3 @@ if __name__ == "__main__":
     res = calculate(dbf, ['FE', 'O', 'VA'], 'SLAG-LIQ', T=600, P=1e5)
     print(res)
     dbf.to_file('Shishin_MQMQA.xml', if_exists="overwrite")
-
