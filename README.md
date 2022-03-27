@@ -18,5 +18,5 @@ from pycalphad import Database
 
 dbf = Database("my_db.xml")  # load from file
 
-dbf.to_file("out.xml")  # write to a fil
+dbf.to_file("out.xml")  # write to a file
 ```
