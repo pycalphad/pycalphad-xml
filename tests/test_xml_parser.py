@@ -94,12 +94,3 @@ def test_xml_roundrip_MQMQA_SUBQ_Q_mixing(load_database):
     print(mod.GM.subs(subs_dict))
     check_energy(mod, subs_dict, -131831.0, mode="sympy")  # FactSage energy, from Max
 
-if __name__ == "__main__":
-    from importlib_resources import files
-    from pycalphad.tests import databases
-    dbf = Database(str(files(databases) / "Shishin_Fe-Sb-O-S_slag.dat"))
-    print(dbf.phases["SLAG-LIQ"])
-    mod = Model(dbf, ['FE', 'O', 'VA'], 'SLAG-LIQ')
-    res = calculate(dbf, ['FE', 'O', 'VA'], 'SLAG-LIQ', T=600, P=1e5)
-    print(res)
-    dbf.to_file('Shishin_MQMQA.xml', if_exists="overwrite")
