@@ -181,6 +181,7 @@ def parse_model(dbf, phase_name, model_node, parameters):
             constituent_array = [[str(c) for c in sorted(lx)] for lx in constituent_array]
 
         # Parameter value
+        # Interval _and_ text (if any) to be able to handle intervals or scalar expressions
         param_nodes = param_node.xpath('./Interval') + [''.join(param_node.xpath('./text()')).strip()]
         function_obj = convert_math_to_symbolic(param_nodes)
 
@@ -253,7 +254,9 @@ def read_xml(dbf, fd):
             dbf.species.add(v.Species(species, constituent_dict, charge=species_charge))
         elif child.tag == 'Expr':
             function_name = str(child.attrib['id'])
-            function_obj = convert_intervals_to_piecewise(child)
+            # Interval _and_ text (if any) to be able to handle intervals or scalar expressions
+            expr_nodes = child.xpath('./Interval') + [''.join(child.xpath('./text()')).strip()]
+            function_obj = convert_math_to_symbolic(expr_nodes)
             _setitem_raise_duplicates(dbf.symbols, function_name, function_obj)
         elif child.tag == 'Phase':
             model_nodes = child.xpath('./Model')

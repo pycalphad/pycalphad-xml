@@ -94,12 +94,18 @@ def test_xml_roundrip_MQMQA_SUBQ_Q_mixing(load_database):
     print(mod.GM.subs(subs_dict))
     check_energy(mod, subs_dict, -131831.0, mode="sympy")  # FactSage energy, from Max
 
-if __name__ == "__main__":
-    from importlib_resources import files
-    from pycalphad.tests import databases
-    dbf = Database(str(files(databases) / "Shishin_Fe-Sb-O-S_slag.dat"))
-    print(dbf.phases["SLAG-LIQ"])
-    mod = Model(dbf, ['FE', 'O', 'VA'], 'SLAG-LIQ')
-    res = calculate(dbf, ['FE', 'O', 'VA'], 'SLAG-LIQ', T=600, P=1e5)
-    print(res)
-    dbf.to_file('Shishin_MQMQA.xml', if_exists="overwrite")
+
+def test_exprs_without_intervals_are_read():
+    XML_STR = """<?xml version="1.0"?>
+    <?xml-model href="database.rng" schematypens="http://relaxng.org/ns/structure/1.0" type="application/xml"?>
+    <Database version="0">
+      <ChemicalElement id="H" mass="1.0" reference_phase="GAS" H298="0.0" S298="0.0"/>
+      <Expr id="VV0000"><Interval in="T" lower="1.0" upper="6000.0">10000</Interval></Expr>
+      <Expr id="VV0001">10000</Expr>
+      <Phase id="F(S)"><Model type="CEF"><ConstituentArray><Site id="0" ratio="1.0"><Constituent refid="H"/></Site></ConstituentArray></Model></Phase>
+    </Database>
+    """
+    db = Database.from_string(XML_STR, fmt="xml")
+
+    assert db.symbols["VV0000"].args[0] == 10000.0
+    assert db.symbols["VV0001"] == 10000.0
