@@ -105,6 +105,17 @@
                         </oneOrMore>
                     </element>
                 </optional>
+                <optional>
+                    <element name="Symmetry">
+                        <a:documentation>Specification of sublattice symmetry.</a:documentation>
+                        <attribute name="type">
+                            <choice>
+                                <value>FCC_4SL</value>
+                                <value>BCC_4SL</value>
+                            </choice>
+                        </attribute>
+                    </element>
+                </optional>
             </interleave>
         </element>
         <zeroOrMore>

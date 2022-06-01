@@ -1,4 +1,4 @@
-from pycalphad.io.tdb import _sympify_string, _process_reference_state, to_interval
+from pycalphad.io.tdb import _sympify_string, _process_reference_state, _symmetry_added_parameter, to_interval
 from pycalphad import variables as v
 from pycalphad import __version__ as pycalphad_version
 from symengine import Piecewise, And, Symbol, S
@@ -360,6 +360,7 @@ def write_xml(dbf, fd, require_valid=True):
             if ('symmetry_BCC_4SL' in model_hints.keys()):
                 if symmetry_node is not None:
                     raise ValueError('Multiple parameter symmetry options specified')
+                symmetry_node = objectify.SubElement(model_node, "Symmetry", type="BCC_4SL")
                 del model_hints['symmetry_BCC_4SL']
             # ChemicalGroups
             if "chemical_groups" in model_hints:
@@ -376,6 +377,8 @@ def write_xml(dbf, fd, require_valid=True):
             raise ValueError('Not all model hints are supported: {}'.format(model_hints))
 
     for param in dbf._parameters.all():
+        if _symmetry_added_parameter(dbf, param):
+            continue
         phase_name = param['phase_name']
         # Create phase implicitly if not defined
         if phase_nodes.get(phase_name, None) is None:
