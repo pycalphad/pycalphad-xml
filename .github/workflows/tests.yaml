@@ -11,13 +11,13 @@ jobs:
       fail-fast: false
       max-parallel: 100
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.11", "3.12", "3.13"]
         pycalphad_development_version: [true, false]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0  # fetch the entire repo history, required to guarantee versioneer will pick up the tags
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install pycalphad development version
